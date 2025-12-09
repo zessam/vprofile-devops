@@ -1,0 +1,27 @@
+FROM nginx:stable-alpine AS runtime
+
+# OCI Labels
+LABEL org.opencontainers.image.title="vprofile-web"
+LABEL org.opencontainers.image.description="Secure Nginx reverse proxy for Java backend"
+LABEL org.opencontainers.image.vendor="Vprofile Project"
+LABEL org.opencontainers.image.authors="Zeyad"
+LABEL org.opencontainers.image.source="local-repo"
+
+# Replace default Nginx config
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+# Copy only the config (no wildcards)
+COPY --chown=root:root nginvproapp.conf /etc/nginx/conf.d/vproapp.conf
+
+# Ensure config is not writeable
+RUN chmod 644 /etc/nginx/conf.d/vproapp.conf
+
+
+# Non-root user (auto-generated)
+USER 1000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
+  CMD wget -qO- http://localhost/ || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]
