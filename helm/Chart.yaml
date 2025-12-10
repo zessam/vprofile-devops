@@ -1,0 +1,6 @@
+apiVersion: v2
+name: vprofile-chart
+description: Helm chart for Java Monolith (Tomcat)
+version: 0.1.0
+appVersion: "1.0.0"
+type: application
